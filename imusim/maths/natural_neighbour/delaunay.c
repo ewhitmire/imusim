@@ -1264,15 +1264,18 @@ voronoiCell* getVoronoiCell(vertex *point, simplex *s0, mesh *m)
   voronoiCell *vc = newVoronoiCell(m,n);
 
   // This is the list of simplicies incident to each edge.
-  simplex  *simps[n];
+  //simplex  *simps[n];
+  simplex  **simps = (simplex**) malloc(n * sizeof(simplex*));
 
   // An edge will always start at our given point, therefore we only need
   // to store the second point to fully define each edge.
   // There are going to be three edges for each simplex.
-  vertex      *edges[3*n];
+  //vertex      *edges[3*n];
+  vertex  **edges = (vertex**) malloc(3 * n * sizeof(vertex*));
   // Since edges must contain duplicate edges, we want to know 
   // when a particular edge has been visited.
-  int i, j = 0, done[3*n];
+  int i, j = 0;//, done[3*n];
+  int  *done = (int*) malloc(3 * n * sizeof(int));
 
   for (i=0; i<arrayListSize(neighbours); i++)
   {
@@ -1343,7 +1346,9 @@ voronoiCell* getVoronoiCell(vertex *point, simplex *s0, mesh *m)
   }
    
   freeArrayList(neighbours, NULL);
-
+  free(simps);
+  free(edges);
+  free(done);
   return vc;
 }
 

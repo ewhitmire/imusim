@@ -3,3 +3,4 @@
 imusim/maths/*.c
 build
 docs/build
+.idea/
