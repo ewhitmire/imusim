@@ -81,7 +81,7 @@ def plot(x, y=None, *args, **kwargs):
 
     if singleArg:
         if isinstance(x, TimeSeries):
-            plotTimeSeries(x, *args, **kwargs)
+            return plotTimeSeries(x, *args, **kwargs)
         else:
             y = x
 

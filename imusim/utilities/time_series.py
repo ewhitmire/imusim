@@ -175,7 +175,7 @@ class TimeSeries(object):
             return values, np.array(self._variances[indices])
 
     def __iter__(self):
-        return zip(self._timestamps, self._values, self._variances)
+        return zip(self._timestamps, self._values, self._variances) if self._hasVariances else zip(self._timestamps, self._values)
 
     def add(self, time, value, variance=None):
         """

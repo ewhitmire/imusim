@@ -83,13 +83,17 @@ natural_neighbour_sources = [
 
 ext_modules = [
     Extension("imusim.maths.quaternions",
-              c_to_pyx(['imusim/maths/quaternions.c'])),
+              c_to_pyx(['imusim/maths/quaternions.c']),
+              include_dirs=[numpy.get_include()]),
     Extension("imusim.maths.quat_splines",
-              c_to_pyx(['imusim/maths/quat_splines.c'])),
+              c_to_pyx(['imusim/maths/quat_splines.c']),
+              include_dirs=[numpy.get_include()]),
     Extension("imusim.maths.vectors",
-              c_to_pyx(['imusim/maths/vectors.c'])),
+              c_to_pyx(['imusim/maths/vectors.c']),
+              include_dirs=[numpy.get_include()]),
     Extension("imusim.maths.natural_neighbour",
-              natural_neighbour_sources)
+              natural_neighbour_sources,
+              include_dirs=[numpy.get_include()])
 ]
 
 if USE_CYTHON:
@@ -113,7 +117,7 @@ if depsOK:
         author = "Alex Young and Martin Ling",
         license = "GPLv3",
         url = "http://www.imusim.org/",
-        install_requires = ["simpy>=2.3,<3", "pyparsing"],
+        install_requires = ["simpy>=2.3,<3", "pyparsing", "future"],
         packages = packages,
         include_dirs = [numpy.get_include()],
         ext_modules = ext_modules
