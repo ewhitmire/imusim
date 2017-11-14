@@ -167,7 +167,7 @@ def testUnscentedTransform_quadratic():
     mean, var = ut(xBar, Sigma)
 
     random.seed(RANDOM_SEED)
-    x = random.normal(loc=xBar, scale=np.sqrt(Sigma), size=1000)
+    x = random.normal(loc=np.squeeze(xBar), scale=np.squeeze(np.sqrt(Sigma)), size=1000)
     X = transformFunction(x)
     checkMeanAndCovariance(mean, var, X)
 

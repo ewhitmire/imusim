@@ -75,7 +75,7 @@ def checkOptimalQ(states):
 
         def filterError(q, filter):
 
-            filter = list(filter(q, states))
+            filter = filter(q, states)
 
             z = np.empty_like(x)
 
@@ -85,7 +85,7 @@ def checkOptimalQ(states):
 
             return np.var(z - x)
 
-        qopt = fmin(filterError, q, [filter], disp=False)[0]
+        qopt = fmin(filterError, q, (filter,), disp=False)[0]
         np.testing.assert_approx_equal(qopt, q, 1)
 
 def testOptimalQ():

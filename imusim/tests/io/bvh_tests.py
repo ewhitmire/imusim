@@ -23,8 +23,9 @@ from imusim.maths.vectors import vector
 from imusim.maths.quaternions import Quaternion
 from numpy.testing import assert_almost_equal
 from imusim.testing.quaternions import assertQuaternionAlmostEqual
-from imusim.maths.transforms import convertCGtoNED
+from imusim.maths.transforms import convertCGtoNED, convertNEDtoCG
 from nose.tools import raises
+import os
 import tempfile
 
 def testBVHInput():
@@ -48,36 +49,38 @@ Frames: 1
 Frame Time: 0.1
 0.0 0.0 0.0 0.0 0.0 0.0 90.0 0.0 0.0
     """
-    testFile = tempfile.NamedTemporaryFile()
+    testFile = tempfile.NamedTemporaryFile(delete=False)
     with testFile:
-        testFile.write(data)
+        testFile.write(data.encode('utf-8'))
         testFile.flush()
-        model = loadBVHFile(testFile.name)
 
-        assert len(list(model.points)) == 3
+    model = loadBVHFile(testFile.name)
+    os.remove(testFile.name)
 
-        assert model.name == 'root'
-        assert len(model.channels) == 6
-        assert len(model.children) == 1
-        assert_almost_equal(model.position(0),vector(0,0,0))
-        assertQuaternionAlmostEqual(model.rotation(0),
-               convertCGtoNED(Quaternion(1,0,0,0)))
+    assert len(list(model.points)) == 3
 
-        j1 = model.getJoint('j1')
-        assert j1.parent is model
-        assert len(j1.channels) == 3
-        assert len(j1.children) == 1
-        assert_almost_equal(j1.positionOffset, vector(10,0,0))
-        assert_almost_equal(j1.position(0), convertCGtoNED(vector(10,0,0)))
-        assertQuaternionAlmostEqual(j1.rotation(0),
-               convertCGtoNED(Quaternion.fromEuler((90, 0, 0), order='zxy')))
+    assert model.name == 'root'
+    assert len(model.channels) == 6
+    assert len(model.children) == 1
+    assert_almost_equal(model.position(0),vector(0,0,0))
+    assertQuaternionAlmostEqual(model.rotation(0),
+           convertCGtoNED(Quaternion(1,0,0,0)))
 
-        j1end = model.getPoint('j1_end')
-        assert j1end.parent is j1
-        assert len(j1end.channels) == 0
-        assert not j1end.isJoint
-        assert_almost_equal(j1end.positionOffset, vector(0,10,0))
-        assert_almost_equal(j1end.position(0), vector(0,0,0))
+    j1 = model.getJoint('j1')
+    assert j1.parent is model
+    assert len(j1.channels) == 3
+    assert len(j1.children) == 1
+    assert_almost_equal(j1.positionOffset, convertCGtoNED(vector(10,0,0)))
+    assert_almost_equal(j1.position(0), convertCGtoNED(vector(10,0,0)))
+    assertQuaternionAlmostEqual(j1.rotation(0),
+           convertCGtoNED(Quaternion.fromEuler((90, 0, 0), order='zxy')))
+
+    j1end = model.getPoint('j1_end')
+    assert j1end.parent is j1
+    assert len(j1end.channels) == 0
+    assert not j1end.isJoint
+    assert_almost_equal(j1end.positionOffset, convertCGtoNED(vector(0,10,0)))
+    assert_almost_equal(j1end.position(0), convertCGtoNED(vector(0,0,0)))
 
 def testBVH_IO():
     data = r"""HIERARCHY
@@ -104,14 +107,18 @@ Frame Time: 0.1
 0.0 3.0 0.0 0.0 0.0 0.0 60.0 0.0 15.0
 0.0 4.0 0.0 0.0 0.0 0.0 50.0 0.0 20.0
     """
-    testFile = tempfile.NamedTemporaryFile()
-    exportFile = tempfile.NamedTemporaryFile()
+    testFile = tempfile.NamedTemporaryFile(delete=False)
+    exportFile = tempfile.NamedTemporaryFile(delete=False)
+    exportFile.close()
     with testFile:
-        testFile.write(data)
+        testFile.write(data.encode('utf-8'))
         testFile.flush()
+        testFile.close()
         model = loadBVHFile(testFile.name)
+        os.remove(testFile.name)
         saveBVHFile(model, exportFile.name, 0.1)
         exportedModel = loadBVHFile(exportFile.name)
+        os.remove(exportFile.name)
 
         assert len(list(model.points)) == len(list(exportedModel.points))
         for orig, exported in zip(model.points, exportedModel.points):
@@ -123,11 +130,12 @@ Frame Time: 0.1
                         exported.rotation(0))
 
 def runSyntaxTest(data):
-    testFile = tempfile.NamedTemporaryFile()
+    testFile = tempfile.NamedTemporaryFile(delete=False)
     with testFile:
-        testFile.write(data)
+        testFile.write(data.encode('utf-8'))
         testFile.flush()
-        model = loadBVHFile(testFile.name)
+    model = loadBVHFile(testFile.name)
+    os.remove(testFile.name)
 
 @raises(SyntaxError)
 def testUnknownChannel():

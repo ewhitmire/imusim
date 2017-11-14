@@ -64,7 +64,7 @@ class DistortedMagneticField(VectorField):
     Magnetic field with distortions superimposed.
     """
 
-    def __init__(self, baseField, distortions=[]):
+    def __init__(self, baseField, distortions=None):
         """
         Construct distorted field model.
 
@@ -72,7 +72,7 @@ class DistortedMagneticField(VectorField):
         @param distortions: List of distortion fields to superimpose.
         """
         self._baseField = baseField
-        self._distortions = distortions
+        self._distortions = distortions if distortions is not None else []
 
     def addDistortion(self, distortion):
         self._distortions.append(distortion)
