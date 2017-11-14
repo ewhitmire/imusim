@@ -189,7 +189,8 @@ listNode* addToLinkedList(linkedList *l, void *e)
 
 void *getFromLinkedList(linkedList *l, int x)
 {
-
+  listNode *thisNode;
+  int i;
   #ifdef DEBUG
   printf("Note: use of access by index in doubly linked list. Is this really "
          "what you want?\n");
@@ -202,8 +203,8 @@ void *getFromLinkedList(linkedList *l, int x)
     exit(1);
   }
   
-  listNode *thisNode = topOfLinkedList(l);
-  int i;
+  thisNode = topOfLinkedList(l);
+
   for (i=0; i<x; i++)
     thisNode = thisNode->next;
   return thisNode->data;
@@ -221,11 +222,12 @@ int linkedListSize(linkedList *l)
 
 void *prevElement(linkedList *l, listNode **last)
 {
+  void *e;
   // If this is the end, return null.
   if (!*last) return NULL;
   // Move the iterator along to the next element,
   // and then return the data item 
-  void *e = (*last)->data;
+  e = (*last)->data;
   *last = (*last)->prev;
   return e;
 }
@@ -234,11 +236,12 @@ void *prevElement(linkedList *l, listNode **last)
 
 void *nextElement(linkedList *l, listNode **last)
 {
+  void *e;
   // If this is the end, return null.
   if (!*last) return NULL;
   // Move the iterator along to the next element,
   // and then return the data item 
-  void *e = (*last)->data;
+  e = (*last)->data;
   *last = (*last)->next;
   return e;
 }

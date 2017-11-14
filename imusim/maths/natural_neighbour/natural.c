@@ -31,6 +31,7 @@
 vertex *loadPoints(char *filename, int *n)
 {
   int i;
+  vertex *ps;
   FILE *f = fopen(filename, "r");
   
   if (!f)
@@ -44,7 +45,7 @@ vertex *loadPoints(char *filename, int *n)
 
   // Allocate enough memory for all of our points.
   // and also the interpolant.
-  vertex *ps = malloc(sizeof(vertex) **n);
+  ps = malloc(sizeof(vertex) **n);
 
   for (i=0; i<*n; i++)
   {
@@ -66,9 +67,9 @@ vertex *loadPoints(char *filename, int *n)
 vertex *initPoints(double *x, double *y, double *z, 
                    double *u, double *v, double *w, int n)
 {
+  int i;
   vertex* ps = malloc(sizeof(vertex) *n);
 
-  int i;
   for (i=0; i<n; i++)
   {
     ps[i].X = x[i];
@@ -89,14 +90,14 @@ vertex *initPoints(double *x, double *y, double *z,
 
 void writePointsToFile(vertex *ps, int n)
 {
+  int i;
   FILE *f = fopen("./points.mat", "wt");
   if (!f)
   {
     fprintf(stderr, "Could not open points file for writing.\n");
     exit(1);
   }
-  
-  int i;
+
   
   for (i=0; i<n; i++)
     fprintf(f, "%lf %lf %lf %lf %lf %lf\n", ps[i].X, ps[i].Y, ps[i].Z, 
@@ -110,9 +111,10 @@ void lastNaturalNeighbours(vertex *v, mesh *m, arrayList *neighbours,
                                                arrayList *neighbourSimplicies)
 {
   int i, j;
+  simplex *this;
   for (i=0; i<arrayListSize(m->updates); i++)
   {
-    simplex *this = getFromArrayList(m->updates,i); 
+    this = getFromArrayList(m->updates,i);
     for (j=0; j<4; j++)
     {     
       if (this->p[j] != v && (! arrayListContains(neighbours, this->p[j])) )
@@ -136,7 +138,30 @@ void interpolate3_3( double  x, double  y, double  z,
                      double *u, double *v, double *w, mesh *m )
 {
   int i;
-  
+  // The verticies which form the natural neighbours of this point.
+  arrayList *neighbours;
+  // The The list of neighbouring simplicies, attached to each one
+  // of the given neighbours. This means makes neighbour lookup much faster
+  // later on.
+  arrayList *neighbourSimplicies;
+
+    // The array of neighbour volumes for each voronoi cell of each
+  // natural neighbour.
+  double *neighbourVolumes;
+
+  // The volume of the point to be interpolated.
+  double pointVolume;
+
+  // The interpolated value.
+  double value[3] = {0,0,0};
+
+  // The sum of the weighing function: may sometimes be less than 1, when
+  // we have points on the super simplex.
+  double sum, weight;
+  vertex  *thisVertex;
+  simplex *thisSimplex, *s ;
+  voronoiCell *vc, *pointCell;
+
   // Set up a temporary vertex to add to this mesh.
   vertex p;
   p.X             =  x;
@@ -144,27 +169,7 @@ void interpolate3_3( double  x, double  y, double  z,
   p.Z             =  z;
   p.index         = -1;
   p.voronoiVolume = -1;
-  
-  // The verticies which form the natural neighbours of this point.
-  arrayList *neighbours;
-  // The The list of neighbouring simplicies, attached to each one
-  // of the given neighbours. This means makes neighbour lookup much faster
-  // later on.
-  arrayList *neighbourSimplicies;
-  
-  // The array of neighbour volumes for each voronoi cell of each
-  // natural neighbour.
-  double *neighbourVolumes;
-  
-  // The volume of the point to be interpolated.
-  double pointVolume;
-  
-  // The interpolated value.
-  double value[3] = {0,0,0};
-  
-  // The sum of the weighing function: may sometimes be less than 1, when
-  // we have points on the super simplex.
-  double sum, weight;
+
   
   // Add the point to the Delaunay Mesh - storing the original state.
   addPoint(&p, m);    
@@ -182,9 +187,9 @@ void interpolate3_3( double  x, double  y, double  z,
   // Calculate the 'before' volumes of each voronoi cell.
   for (i=0; i<arrayListSize(neighbours); i++)
   {
-    vertex  *thisVertex  = getFromArrayList(neighbours, i);
-    simplex *thisSimplex = getFromArrayList(neighbourSimplicies,i);  
-    voronoiCell *vc      = getVoronoiCell(thisVertex, thisSimplex, m);    
+    thisVertex  = getFromArrayList(neighbours, i);
+    thisSimplex = getFromArrayList(neighbourSimplicies,i);
+    vc          = getVoronoiCell(thisVertex, thisSimplex, m);
     neighbourVolumes[i]  = voronoiCellVolume(vc, thisVertex);  
     freeVoronoiCell(vc,m); 
   }
@@ -192,9 +197,9 @@ void interpolate3_3( double  x, double  y, double  z,
   // Calculate the volume of the new point's Voronoi Cell.
   // We just need any neighbour simplex to use as an entry point into the
   // mesh.
-  simplex *s             = getFromArrayList(neighbourSimplicies,0);
-  voronoiCell *pointCell = getVoronoiCell(&p, s, m);
-  pointVolume            = voronoiCellVolume(pointCell, &p);
+  s           = getFromArrayList(neighbourSimplicies,0);
+  pointCell   = getVoronoiCell(&p, s, m);
+  pointVolume = voronoiCellVolume(pointCell, &p);
   freeVoronoiCell(pointCell,m);
          
   // Remove the last point.
@@ -205,14 +210,14 @@ void interpolate3_3( double  x, double  y, double  z,
   // given when the point was added.
   for (i=0; i<arrayListSize(neighbours); i++)
   {
-    vertex *thisVertex   = getFromArrayList(neighbours, i);  
+    thisVertex   = getFromArrayList(neighbours, i);
     
     // All verticies have -1 here to start with, so we can tell if 
     // we have already calculated this value, and use it again here.
     if (thisVertex->voronoiVolume < 0)
     {
-      simplex *s           = findAnyNeighbour(thisVertex, m->conflicts);
-      voronoiCell *vc      = getVoronoiCell(thisVertex, s, m);
+      s           = findAnyNeighbour(thisVertex, m->conflicts);
+      vc          = getVoronoiCell(thisVertex, s, m);
       thisVertex->voronoiVolume = voronoiCellVolume(vc, thisVertex);
       freeVoronoiCell(vc,m);
     }
@@ -225,7 +230,7 @@ void interpolate3_3( double  x, double  y, double  z,
 
   for (i=0; i<arrayListSize(neighbours); i++)
   {
-    vertex *thisVertex = getFromArrayList(neighbours, i);
+    thisVertex = getFromArrayList(neighbours, i);
     assert (neighbourVolumes[i]>= -0.001);
     
     // Get the weight of this vertex.
@@ -303,12 +308,18 @@ double getTime()
 
 int main(int argc, char **argv)
 {  
-  int i; 
-  int n = NUM_TEST_POINTS;
+  int i,n,detail,to_do, j,k,done,pps;
+  vertex *ps;
+  mesh *m;
+  vertex min, max, range;
+  double error_sum, x, y, z, d1, d2, d3,t1,t2,u, v, w;
+  FILE *f;
+
+  n = NUM_TEST_POINTS;
   srand ( time(NULL) );
   
   // Create a random pointset for testing.
-  vertex *ps = malloc(sizeof(vertex)*NUM_TEST_POINTS);
+  ps = malloc(sizeof(vertex)*NUM_TEST_POINTS);
 
   for (i=0; i<n; i++)
   {
@@ -326,7 +337,7 @@ int main(int argc, char **argv)
     ps[i].voronoiVolume = -1;
   }
 
-  mesh *m = newMesh();
+  m = newMesh();
   buildMesh(ps, n, m);
 
   // Display some information about the mesh.
@@ -341,15 +352,13 @@ int main(int argc, char **argv)
   writePointsToFile(ps, n);
   #endif
 
-  vertex min, max, range;
   getRange(ps, n, &min, &max, &range, 0);
 
   // We will store the component-wise sum over all errors, and max error
   // so that we can get an idea for the performance of our interpolator.
-  double error_sum = 0;
+  error_sum = 0;
 
-  double x, y, z, d1, d2, d3;
-  int detail = INTERPOLATE_DETAIL;  
+  detail = INTERPOLATE_DETAIL;
 
   d1 = range.X / detail;
   d2 = range.Y / detail;
@@ -358,11 +367,11 @@ int main(int argc, char **argv)
   // This will tell us how many steps are in our main loop:
   // so that we can show an indication as to how far we have gone through
   // the calculation.
-  int to_do = detail*detail*detail;
+  to_do = detail*detail*detail;
   
   #ifdef OUTPUT_TO_FILE
   // Interpolate a set of points.
-  FILE *f = fopen("./out.mat","wt");
+  f = fopen("./out.mat","wt");
   if (!f)
   {
     fprintf(stderr, "Could not open point file for writing.\n");
@@ -370,15 +379,14 @@ int main(int argc, char **argv)
   }
   #endif
 
-  int j,k,done=1;
-  double t1 = getTime();
+  done=1;
+  t1 = getTime();
   for (i=0; i<detail; i++)
   {
     for (j=0; j<detail; j++)
     {
       for (k=0; k<detail; k++, done++)
       {
-        double u, v, w;
         
         x = min.X + i*d1;
         y = min.Y + j*d2;
@@ -399,7 +407,7 @@ int main(int argc, char **argv)
       }
     }
   }
-  double t2 = getTime();
+  t2 = getTime();
   
   #ifdef OUTPUT_TO_FILE
   fclose(f);
@@ -407,7 +415,7 @@ int main(int argc, char **argv)
   
   printf("\n\n");
 
-  int pps = (double)to_do/(double)(t2-t1);
+  pps = (double)to_do/(double)(t2-t1);
   
   printf("Interpolated %d points in %lf seconds (%d points/second).\n\n", 
                                          to_do, t2-t1,pps);
