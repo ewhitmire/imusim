@@ -18,6 +18,7 @@ Analogue to digital converter models.
 # You should have received a copy of the GNU General Public License
 # along with IMUSim.  If not, see <http://www.gnu.org/licenses/>.
 
+import six
 from abc import ABCMeta, abstractmethod
 from imusim.simulation.base import Simulation
 from imusim.platforms.base import Component
@@ -26,7 +27,9 @@ from imusim.utilities.documentation import prepend_method_doc
 import SimPy.Simulation
 import numpy as np
 
-class ADC(Component, metaclass=ABCMeta):
+
+@six.add_metaclass(ABCMeta)
+class ADC(Component):
     """
     Base class for ADCs.
     """

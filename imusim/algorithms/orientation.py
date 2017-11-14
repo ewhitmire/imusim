@@ -18,7 +18,7 @@ Algorithms for tracking orientation using inertial/magnetic sensor data.
 # You should have received a copy of the GNU General Public License
 # along with IMUSim.  If not, see <http://www.gnu.org/licenses/>.
 
-
+import six
 from abc import ABCMeta, abstractmethod
 from imusim.maths.quaternions import Quaternion
 from imusim.maths import vectors
@@ -32,7 +32,9 @@ import collections
 import numpy as np
 import math
 
-class OrientationFilter(object, metaclass=ABCMeta):
+
+@six.add_metaclass(ABCMeta)
+class OrientationFilter:
     """
     Base class for orientation estimation filters.
 

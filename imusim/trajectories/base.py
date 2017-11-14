@@ -18,12 +18,14 @@ Base classes for trajectories.
 # You should have received a copy of the GNU General Public License
 # along with IMUSim.  If not, see <http://www.gnu.org/licenses/>.
 
+import six
 from abc import ABCMeta, abstractmethod, abstractproperty
 from imusim.maths.quaternions import Quaternion, QuaternionArray
 from scipy.linalg import expm
 import numpy as np
 
-class AbstractTrajectory(object, metaclass=ABCMeta):
+@six.add_metaclass(ABCMeta)
+class AbstractTrajectory:
     """
     Base class of trajectories
     """

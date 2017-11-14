@@ -19,6 +19,7 @@ Base class for MAC algorithm implementations.
 # along with IMUSim.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import six
 from abc import ABCMeta, abstractmethod
 from imusim.platforms.base import Platform
 from imusim.platforms.radios import Radio, RadioPacket
@@ -27,7 +28,8 @@ from imusim.maths.quaternions import Quaternion
 from imusim.utilities.documentation import prepend_method_doc
 import numpy as np
 
-class MAC(object, metaclass=ABCMeta):
+@six.add_metaclass(ABCMeta)
+class MAC:
     """
     Base class for MAC implementations.
 

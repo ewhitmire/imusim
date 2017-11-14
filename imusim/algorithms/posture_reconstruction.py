@@ -18,12 +18,14 @@ Algorithms for reconstructing the posture of a body model.
 # You should have received a copy of the GNU General Public License
 # along with IMUSim.  If not, see <http://www.gnu.org/licenses/>.
 
+import six
 from abc import ABCMeta, abstractmethod
 from imusim.trajectories.rigid_body import SampledBodyModel
 from imusim.maths.quaternions import Quaternion
 from imusim.platforms.radios import RadioPacket
 
-class PostureReconstructor(object, metaclass=ABCMeta):
+@six.add_metaclass(ABCMeta)
+class PostureReconstructor:
     """
     Base class for posture reconstruction algorithms.
 

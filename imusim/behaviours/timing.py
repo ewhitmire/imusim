@@ -18,7 +18,7 @@ Timing behaviours.
 # You should have received a copy of the GNU General Public License
 # along with IMUSim.  If not, see <http://www.gnu.org/licenses/>.
 
-
+import six
 from abc import ABCMeta, abstractmethod
 from imusim.platforms.timers import Timer
 from imusim.simulation.base import Simulation
@@ -86,7 +86,8 @@ class VirtualTimer(object):
     def timeElapsed(self):
         return (self._period - self._remaining) + self.mux._timer.timeElapsed()
 
-class TimerMultiplexer(object, metaclass=ABCMeta):
+@six.add_metaclass(ABCMeta)
+class TimerMultiplexer:
     """
     Multiplexer for running multiple virtual timers on one hardware timer.
     """

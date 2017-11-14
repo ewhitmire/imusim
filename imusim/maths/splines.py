@@ -20,12 +20,14 @@ Spline fitting.
 
 
 import numpy as np
+import six
 from abc import ABCMeta, abstractmethod, abstractproperty
 from scipy.interpolate import splrep, splev
 
 import math
 
-class Spline(object, metaclass=ABCMeta):
+@six.add_metaclass(ABCMeta)
+class Spline:
 
     """
     Base class for splines.

@@ -21,8 +21,11 @@ Iterative integrator implementations.
 from imusim.utilities.documentation import prepend_method_doc
 from abc import ABCMeta, abstractmethod
 from copy import copy
+import six
 
-class Integrator(object, metaclass=ABCMeta):
+
+@six.add_metaclass(ABCMeta)
+class Integrator:
     """
     Base class for integrators.
     """

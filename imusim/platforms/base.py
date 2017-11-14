@@ -18,10 +18,13 @@ Base class for simulated hardware platforms.
 # You should have received a copy of the GNU General Public License
 # along with IMUSim.  If not, see <http://www.gnu.org/licenses/>.
 
+import six
 from abc import ABCMeta, abstractproperty, abstractmethod
 from imusim.simulation.base import Simulation
 
-class Platform(object, metaclass=ABCMeta):
+
+@six.add_metaclass(ABCMeta)
+class Platform:
     """
     Base class for simulated hardware platforms.
     """
@@ -84,7 +87,8 @@ class Platform(object, metaclass=ABCMeta):
         for component in self.components:
             component._trajectoryChange()
 
-class Component(object, metaclass=ABCMeta):
+@six.add_metaclass(ABCMeta)
+class Component:
     """
     Base class for simulated hardware components.
     """

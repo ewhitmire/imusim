@@ -18,7 +18,7 @@ Algorithms for estimating orientation from reference vector observations.
 # You should have received a copy of the GNU General Public License
 # along with IMUSim.  If not, see <http://www.gnu.org/licenses/>.
 
-
+import six
 from abc import ABCMeta, abstractmethod
 from imusim.maths.quaternions import Quaternion
 from scipy.optimize import newton
@@ -27,7 +27,9 @@ from imusim.utilities.documentation import prepend_method_doc
 import numpy as np
 import math
 
-class VectorObservation(object, metaclass=ABCMeta):
+
+@six.add_metaclass(ABCMeta)
+class VectorObservation:
     """
     Base class for all vector observation methods.
 

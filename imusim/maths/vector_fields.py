@@ -18,6 +18,7 @@ Classes for modelling 3D vector fields.
 # You should have received a copy of the GNU General Public License
 # along with IMUSim.  If not, see <http://www.gnu.org/licenses/>.
 
+import six
 from abc import ABCMeta, abstractmethod, abstractproperty
 from scipy import interpolate
 from imusim.maths import vectors
@@ -25,7 +26,8 @@ from imusim.utilities.documentation import prepend_method_doc
 from imusim.maths.natural_neighbour import NaturalNeighbourInterpolatorC
 import numpy as np
 
-class VectorField(object, metaclass=ABCMeta):
+@six.add_metaclass(ABCMeta)
+class VectorField:
     """
     Base class for vector fields.
     """

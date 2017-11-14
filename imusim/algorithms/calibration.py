@@ -20,11 +20,13 @@ Calibration algorithms for IMU sensors.
 
 
 from scipy.optimize import leastsq
-from abc import abstractmethod, ABCMeta
+import six
+from abc import ABCMeta, abstractmethod
 import imusim.maths.vectors as vectors
 import numpy as np
 
-class SensorCalibration(object, metaclass=ABCMeta):
+@six.add_metaclass(ABCMeta)
+class SensorCalibration:
     """
     Calibration data for a triaxial sensor.
     """

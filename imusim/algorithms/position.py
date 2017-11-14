@@ -18,6 +18,7 @@ Algorithms for tracking the position of a body model.
 # You should have received a copy of the GNU General Public License
 # along with IMUSim.  If not, see <http://www.gnu.org/licenses/>.
 
+import six
 from abc import ABCMeta, abstractmethod
 import numpy as np
 import scipy.stats
@@ -27,7 +28,9 @@ from imusim.maths.kalman import KalmanFilter
 from imusim.utilities.time_series import TimeSeries
 from imusim.utilities.documentation import prepend_method_doc
 
-class PositionEstimator(object, metaclass=ABCMeta):
+
+@six.add_metaclass(ABCMeta)
+class PositionEstimator:
     """
     Base class for position estimation algorithms.
 

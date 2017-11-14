@@ -18,6 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with IMUSim.  If not, see <http://www.gnu.org/licenses/>.
 
+import six
 import time
 import wx
 import numpy as np
@@ -115,7 +116,8 @@ def autoPositionCamera():
     mlab.roll(0)
     s.disable_render = False
 
-class AnimatedRenderer(object, metaclass=ABCMeta):
+@six.add_metaclass(ABCMeta)
+class AnimatedRenderer:
     """
     Base class for animation renderers.
     """

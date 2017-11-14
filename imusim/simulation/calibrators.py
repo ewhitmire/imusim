@@ -19,6 +19,7 @@ Simulation of calibration procedures for IMUs.
 # along with IMUSim.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import six
 from imusim.environment.base import Environment
 from imusim.environment.gravity import STANDARD_GRAVITY
 from imusim.platforms.sensors import Sensor
@@ -34,7 +35,8 @@ from imusim.utilities.documentation import prepend_method_doc
 from abc import abstractmethod, ABCMeta
 import numpy as np
 
-class Calibrator(object, metaclass=ABCMeta):
+@six.add_metaclass(ABCMeta)
+class Calibrator:
     """
     A calibration procedure for IMUs.
 

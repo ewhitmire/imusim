@@ -18,7 +18,7 @@ Models of hardware timers.
 # You should have received a copy of the GNU General Public License
 # along with IMUSim.  If not, see <http://www.gnu.org/licenses/>.
 
-
+import six
 from abc import ABCMeta, abstractmethod
 from imusim.platforms.base import Component
 from imusim.simulation.base import Simulation
@@ -26,7 +26,9 @@ from imusim.utilities.documentation import prepend_method_doc
 import SimPy.Simulation
 import numpy as np
 
-class Timer(Component, metaclass=ABCMeta):
+
+@six.add_metaclass(ABCMeta)
+class Timer(Component):
     """
     Base class for simulated hardware timers.
 

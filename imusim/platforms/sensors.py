@@ -18,6 +18,7 @@ Base classes for sensor models.
 # You should have received a copy of the GNU General Public License
 # along with IMUSim.  If not, see <http://www.gnu.org/licenses/>.
 
+import six
 from abc import ABCMeta, abstractmethod
 from imusim.platforms.base import Component
 from imusim.maths.transforms import AffineTransform
@@ -28,7 +29,8 @@ from imusim.maths.vectors import vector
 from imusim.maths.quaternions import Quaternion
 import numpy as np
 
-class Sensor(Component, metaclass=ABCMeta):
+@six.add_metaclass(ABCMeta)
+class Sensor(Component):
     """
     Base class for all IMU sensor classes.
 

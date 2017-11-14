@@ -19,9 +19,11 @@ Radio environment models.
 # along with IMUSim.  If not, see <http://www.gnu.org/licenses/>.
 
 import numpy as np
+import six
 from abc import ABCMeta, abstractmethod
 
-class RadioEnvironment(object, metaclass=ABCMeta):
+@six.add_metaclass(ABCMeta)
+class RadioEnvironment:
     """
     Base class for radio environment models.
 

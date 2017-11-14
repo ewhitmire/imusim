@@ -18,6 +18,7 @@ IMU hardware platform models.
 # You should have received a copy of the GNU General Public License
 # along with IMUSim.  If not, see <http://www.gnu.org/licenses/>.
 
+import six
 from abc import ABCMeta, abstractproperty
 from imusim.platforms.base import Platform
 from imusim.platforms.sensors import Sensor
@@ -33,7 +34,8 @@ from imusim.platforms.radios import Radio, IdealRadio
 from imusim.maths.vectors import vector
 from imusim.utilities.documentation import prepend_method_doc
 
-class IMU(Platform, metaclass=ABCMeta):
+@six.add_metaclass(ABCMeta)
+class IMU(Platform):
     """
     An IMU hardware platform with one or more sensors.
     """

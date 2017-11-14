@@ -18,6 +18,7 @@ Behaviours for IMU devices.
 # You should have received a copy of the GNU General Public License
 # along with IMUSim.  If not, see <http://www.gnu.org/licenses/>.
 from abc import ABCMeta
+import six
 from imusim.utilities.time_series import TimeSeries
 from imusim.behaviours.timing import TimerMultiplexer, VirtualTimer
 from imusim.behaviours.sampling import PeriodicSampler
@@ -26,7 +27,8 @@ from imusim.platforms.sensors import Sensor
 from imusim.algorithms.orientation import OrientationFilter
 from imusim.platforms.imus import IMU
 
-class BasicIMUBehaviour(object, metaclass=ABCMeta):
+@six.add_metaclass(ABCMeta)
+class BasicIMUBehaviour:
     """
     Basic behaviour for an IMU that performs periodic sampling.
 
