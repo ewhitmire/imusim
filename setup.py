@@ -53,6 +53,7 @@ except ImportError:
 try:
     from setuptools import setup, find_packages
     from setuptools.extension import Extension
+    from Cython.Build import cythonize
     if depsOK:
         setup(
             name = "imusim",
@@ -63,17 +64,17 @@ try:
             install_requires = ["simpy>=2.3,<3", "pyparsing", "six"],
             packages = find_packages(),
             include_dirs = [numpy.get_include()],
-            ext_modules = [
+            ext_modules = cythonize([
                 Extension("imusim.maths.quaternions",
-                    ['imusim/maths/quaternions.c']),
+                    ['imusim/maths/quaternions.pyx']),
                 Extension("imusim.maths.quat_splines",
-                    ['imusim/maths/quat_splines.c']),
-                Extension("imusim.maths.vectors",['imusim/maths/vectors.c']),
+                    ['imusim/maths/quat_splines.pyx']),
+                Extension("imusim.maths.vectors",['imusim/maths/vectors.pyx']),
                 Extension("imusim.maths.natural_neighbour",[
                     'imusim/maths/natural_neighbour/utils.c',
                     'imusim/maths/natural_neighbour/delaunay.c',
                     'imusim/maths/natural_neighbour/natural.c',
-                    'imusim/maths/natural_neighbour.c'])]
+                    'imusim/maths/natural_neighbour.pyx'])])
         )
 except ImportError:
     print("Setuptools must be installed - see http://pypi.python.org/pypi/setuptools")

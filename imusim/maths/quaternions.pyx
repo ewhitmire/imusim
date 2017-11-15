@@ -24,6 +24,7 @@ from scipy import interpolate
 from imusim.maths.vector_splines import PartialInputVectorSpline
 from imusim.maths import vectors, matrices
 import operator
+from functools import reduce
 
 cimport numpy as np
 
